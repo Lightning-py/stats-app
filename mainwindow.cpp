@@ -50,6 +50,22 @@ void MainWindow::update() {
     float CPUtemp = getCPUTemperature();
     float GPUtemp = getGPUTemperature();
 
+    if (CPUtemp >= 0 && CPUtemp < 60) {
+        ui->CPUlabel->setStyleSheet("color: rgb(0, 255, 0)");
+    } else if (CPUtemp < 90) {
+        ui->CPUlabel->setStyleSheet("color: rgb(255, 255, 0)");
+    } else {
+        ui->CPUlabel->setStyleSheet("color: rgb(255, 0, 0)");
+    }
+
+    if (GPUtemp >= 0 && GPUtemp < 60) {
+        ui->GPUlabel->setStyleSheet("color: rgb(0, 255, 0)");
+    } else if (GPUtemp < 85) {
+        ui->GPUlabel->setStyleSheet("color: rgb(255, 255, 0)");
+    } else {
+        ui->GPUlabel->setStyleSheet("color: rgb(255, 0, 0)");
+    }
+
     QString CPUtemperature = QString::fromStdString("CPU: " + std::to_string((int) CPUtemp));
     QString GPUtemperature = QString::fromStdString("GPU: " + std::to_string((int) GPUtemp));
 
@@ -59,7 +75,7 @@ void MainWindow::update() {
     if (CPUtemp > 90 && !CPUshown) {
         QMessageBox message;
         message.setIcon(QMessageBox::Critical);
-        message.setText("Критическое уведомление");
+        message.setText("Критическая температура процессора");
         message.setInformativeText("Температура процессора выше 90 градусов");
 
         message.move(800, 500);
@@ -69,13 +85,14 @@ void MainWindow::update() {
 
         QTimer *timer = new QTimer(this);
         connect(timer, &QTimer::timeout, this, &MainWindow::setCPUshownFalse);
+        timer->setSingleShot(true);
         timer->start(10000);
     }
 
     if (GPUtemp > 85 && !GPUshown) {
         QMessageBox message;
         message.setIcon(QMessageBox::Critical);
-        message.setText("Критическое уведомление");
+        message.setText("Критическая температура видеокартыcd");
         message.setInformativeText("Температура видеокарты выше 85 градусов");
 
         message.move(800, 500);
@@ -85,6 +102,7 @@ void MainWindow::update() {
 
         QTimer *timer = new QTimer(this);
         connect(timer, &QTimer::timeout, this, &MainWindow::setGPUshownFalse);
+        timer->setSingleShot(true);
         timer->start(10000);
     }
 }
